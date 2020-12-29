@@ -34,7 +34,7 @@
         app:layout_constraintBottom_toTopOf="@+id/fab_add_from_camera"
         app:layout_constraintEnd_toEndOf="@+id/fab_add_from_camera"
         app:layout_constraintStart_toStartOf="@+id/fab_add_from_camera"
-        app:srcCompat="@drawable/ic_photo_camera"
+        app:srcCompat="@drawable/ic_video"
         app:tint="@android:color/white" />
 
     <TextView
@@ -42,7 +42,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
+        android:background="@drawable/rounded_corner"
+        android:padding="10dp"
         android:text="@string/video"
+        android:textColor="@android:color/white"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/fab_add_from_video"
         app:layout_constraintEnd_toStartOf="@+id/fab_add_from_video"
@@ -68,7 +71,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
+        android:background="@drawable/rounded_corner"
+        android:padding="10dp"
         android:text="@string/camera"
+        android:textColor="@android:color/white"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/fab_add_from_camera"
         app:layout_constraintEnd_toStartOf="@+id/fab_add_from_camera"
@@ -84,7 +90,7 @@
         app:fabSize="mini"
         app:layout_constraintBottom_toTopOf="@+id/fab_add_item"
         app:layout_constraintEnd_toEndOf="@+id/fab_add_item"
-        app:srcCompat="@drawable/ic_add_photo_gallery"
+        app:srcCompat="@drawable/ic_insert_photo"
         app:tint="@android:color/white" />
 
     <TextView
@@ -92,7 +98,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
+        android:background="@drawable/rounded_corner"
+        android:padding="10dp"
         android:text="@string/gallery"
+        android:textColor="@android:color/white"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/fab_add_from_gallery"
         app:layout_constraintEnd_toStartOf="@+id/fab_add_from_gallery"
