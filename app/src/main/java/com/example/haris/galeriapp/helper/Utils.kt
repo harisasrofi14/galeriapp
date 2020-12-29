@@ -1,9 +1,14 @@
 package com.example.haris.galeriapp.helper
 
 import android.content.Context
+import android.database.Cursor
+import android.net.Uri
 import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
 
@@ -37,4 +42,34 @@ object Utils {
         }
         return File(dir, newFileName)
     }
+
+    fun getRealPathFromURI(context: Context, contentURI: Uri): String? {
+        val result: String?
+        val cursor: Cursor? = context.contentResolver.query(contentURI, null, null, null, null)
+        if (cursor == null) {
+            result = contentURI.path
+        } else {
+            cursor.moveToFirst()
+            val idx: Int = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+            result = cursor.getString(idx)
+            cursor.close()
+        }
+        return result
+    }
+
+    @Throws(IOException::class)
+    fun copy(src: FileInputStream, dst: File?) {
+        src.use { `in` ->
+            FileOutputStream(dst).use { out ->
+                // Transfer bytes from in to out
+                val buf = ByteArray(1024)
+                var len: Int
+                while (`in`.read(buf).also { len = it } > 0) {
+                    out.write(buf, 0, len)
+                }
+            }
+        }
+    }
+
+
 }
