@@ -10,9 +10,14 @@ import com.example.haris.galeriapp.model.Item
 import com.example.haris.galeriapp.view.main.MainActivity.Companion.EXTRA_ITEM
 import com.example.haris.galeriapp.view.main.MainActivity.Companion.TYPE_VIDEO
 import kotlinx.android.synthetic.main.activity_detail.*
+import kotlinx.android.synthetic.main.activity_detail.videoView
 import kotlinx.android.synthetic.main.item_gallery.view.*
 
+
 class DetailActivity : AppCompatActivity() {
+
+    private var position = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
@@ -37,5 +42,20 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
+    override fun onPause() {
+        position = videoView.currentPosition
+        super.onPause()
+    }
 
+    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        super.onSaveInstanceState(savedInstanceState)
+        savedInstanceState.putInt("Position", position)
+        videoView.pause()
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        position = savedInstanceState.getInt("Position")
+        videoView.seekTo(position)
+    }
 }

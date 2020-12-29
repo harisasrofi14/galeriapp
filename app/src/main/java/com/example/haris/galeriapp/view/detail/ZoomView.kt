@@ -1,5 +1,6 @@
 package com.example.haris.galeriapp.view.detail
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Matrix
@@ -9,6 +10,9 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 class ZoomView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -45,8 +49,8 @@ class ZoomView @JvmOverloads constructor(
 
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 scale *= detector.scaleFactor
-                scale = Math.min(scale, 25f)
-                scale = Math.max(0.5f, scale)
+                scale = min(scale, 25f)
+                scale = max(0.5f, scale)
 
                 invalidate()
                 return true
@@ -61,7 +65,6 @@ class ZoomView @JvmOverloads constructor(
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
-        //Timber.d("Image on layout : layoutChanged = $changed")
         if (changed) {
             drawable?.let {
                 resetBoxRect(it, left, right, top, bottom)
@@ -70,8 +73,6 @@ class ZoomView @JvmOverloads constructor(
     }
 
     private fun resetBoxRect(it: Drawable, left: Int, right: Int, top: Int, bottom: Int) {
-        //Timber.d("image coordinates $left, $top, $right, $bottom")
-
         drawableHeight = it.intrinsicHeight.toDouble()
         drawableWidth = it.intrinsicWidth.toDouble()
 
@@ -83,8 +84,7 @@ class ZoomView @JvmOverloads constructor(
             (bottom - top) / 2 + imageMatrixArray[Matrix.MSCALE_Y] * it.intrinsicHeight / 2
         )
 
-        //Timber.d("Image bound $imageBound, and $boxRect")
-        minBoxRectSide = (.01f * Math.max(
+        minBoxRectSide = (.01f * max(
             imageBound.bottom - imageBound.top,
             imageBound.right - imageBound.left
         )).toInt()
@@ -102,17 +102,14 @@ class ZoomView @JvmOverloads constructor(
     override fun setImageDrawable(drawable: Drawable?) {
         super.setImageDrawable(drawable)
         drawable?.let {
-            if (imageMatrixArray != null) {
-                resetBoxRect(it, left, right, top, bottom)
-            }
+            resetBoxRect(it, left, right, top, bottom)
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         parent.requestDisallowInterceptTouchEvent(true)
-        //Timber.d("On touch start")
         scaleDetector.onTouchEvent(event)
-        //Timber.d("On touch gesture sent")
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> onActionDown(event)
             MotionEvent.ACTION_MOVE -> onMoveEvent(event)
@@ -148,9 +145,9 @@ class ZoomView @JvmOverloads constructor(
             lastTouchX = event.getX(index)
             lastTouchY = event.getY(index)
 
-            if (Math.abs(translateX + dx) < imageBound.right - imageBound.left)
+            if (abs(translateX + dx) < imageBound.right - imageBound.left)
                 translateX += dx
-            if (Math.abs(translateY + dy) < imageBound.bottom - imageBound.top)
+            if (abs(translateY + dy) < imageBound.bottom - imageBound.top)
                 translateY += dy
 
             invalidate()
@@ -162,8 +159,6 @@ class ZoomView @JvmOverloads constructor(
         val pointerIndex = event.actionIndex
         val pointerId = event.getPointerId(pointerIndex)
         if (pointerId == activePointerId) {
-            // This was our active pointer going up. Choose a new
-            // active pointer and adjust accordingly.
             val newPointerIndex = if (pointerIndex == 0) 1 else 0
             lastTouchX = event.getX(newPointerIndex)
             lastTouchY = event.getY(newPointerIndex)
@@ -173,12 +168,9 @@ class ZoomView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         canvas.save()
-
         canvas.scale(scale, scale, scalePoint.x, scalePoint.y)
         canvas.translate(translateX, translateY)
-
         super.onDraw(canvas)
-
         canvas.restore()
     }
 }

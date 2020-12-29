@@ -3,4 +3,6 @@
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
     <string name="video">Video</string>
+    <string name="thumbnail">thumbnail</string>
+    <string name="play_button">play button</string>
 </resources>

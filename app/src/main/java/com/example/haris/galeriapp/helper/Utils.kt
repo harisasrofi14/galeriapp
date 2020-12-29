@@ -43,11 +43,12 @@ object Utils {
         return File(dir, newFileName)
     }
 
-    fun getRealPathFromURI(context: Context, contentURI: Uri): String? {
+    fun getRealPathFromURI(context: Context, contentURI: Uri?): String? {
         val result: String?
-        val cursor: Cursor? = context.contentResolver.query(contentURI, null, null, null, null)
+        val cursor: Cursor? =
+            contentURI?.let { context.contentResolver.query(it, null, null, null, null) }
         if (cursor == null) {
-            result = contentURI.path
+            result = contentURI?.path
         } else {
             cursor.moveToFirst()
             val idx: Int = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)

@@ -14,12 +14,12 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.haris.galeriapp.R
-import com.example.haris.galeriapp.view.detail.DetailActivity
 import com.example.haris.galeriapp.adapter.GalleryAdapter
 import com.example.haris.galeriapp.adapter.GalleryItemClickListener
 import com.example.haris.galeriapp.helper.Utils
 import com.example.haris.galeriapp.model.Item
 import com.example.haris.galeriapp.presenter.MainPresenter
+import com.example.haris.galeriapp.view.detail.DetailActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.*
 import java.util.*
@@ -48,17 +48,34 @@ class MainActivity : AppCompatActivity(), MainView {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        initAdapter()
+        initPresenter()
+        initFloatingButton()
+    }
 
+    private fun initAdapter() {
         galleryAdapter = GalleryAdapter()
+        galleryAdapter.setOnItemClickCallback(object : GalleryItemClickListener {
+            override fun onClick(data: Item) {
+                val intent = Intent(this@MainActivity, DetailActivity::class.java)
+                intent.putExtra(EXTRA_ITEM, data)
+                startActivity(intent)
+            }
+        })
         recyclerView.layoutManager = GridLayoutManager(this, SPAN_COUNT)
         recyclerView.adapter = galleryAdapter
+        recyclerView.setHasFixedSize(true)
+    }
+
+    private fun initPresenter() {
         presenter = MainPresenter(
             this
         )
-        presenter.getAllImage(this@MainActivity)
-        presenter.getAllVideo(this@MainActivity)
+        presenter.getAllImage(applicationContext)
+        presenter.getAllVideo(applicationContext)
+    }
 
-
+    private fun initFloatingButton() {
         isAllFabVisible = false
         fab_add_item.shrink()
         fab_add_item.setOnClickListener {
@@ -96,13 +113,6 @@ class MainActivity : AppCompatActivity(), MainView {
                 recordVideo()
             }
         }
-        galleryAdapter.setOnItemClickCallback(object : GalleryItemClickListener {
-            override fun onClick(data: Item) {
-                val intent = Intent(this@MainActivity, DetailActivity::class.java)
-                intent.putExtra(EXTRA_ITEM, data)
-                startActivity(intent)
-            }
-        })
     }
 
     override fun showAllImage(data: List<Item>) {
@@ -223,7 +233,8 @@ class MainActivity : AppCompatActivity(), MainView {
             )
             galleryAdapter.setItem(itemList)
         } else if (requestCode == REQUEST_OPEN_GALLERY && resultCode == RESULT_OK) {
-            val selectedMediaUri: Uri = data?.data!!
+
+            val selectedMediaUri: Uri? = data?.data
 
             val file = File(selectedMediaUri.let {
                 Utils.getRealPathFromURI(this@MainActivity, it).toString()
